@@ -1,5 +1,6 @@
 import { useState } from "react";
 import "./dnd.scss";
+import Task from "../components/task/Task";
 
 export default function Dnd() {
   // 3 Columns for the tasks to be dragged between
@@ -25,7 +26,7 @@ export default function Dnd() {
     const newTask = {
       id: tasks.length + 1,
       column: "Backlog",
-      value: `task ${tasks.length + 1}`,
+      value: `New Task`,
       isEditing: false,
     };
 
@@ -65,6 +66,7 @@ export default function Dnd() {
   //2. changes category of the task to its new column
   //3. setTask to our NewTasks
   const changeColumn = (taskId, column) => {
+    console.log(column);
     const newTasks = [...tasks];
     newTasks[taskId - 1].column = column;
     setTasks([...newTasks]);
@@ -75,11 +77,13 @@ export default function Dnd() {
   // 3. doesn't allow drop in noDrop
   // 4. changeCategory (see above)
   const handleDrop = (e, column) => {
+    console.log(dragData.id);
     setNoDrop("");
     const selected = dragData.id;
     if (column === "noDrop") {
       console.log("nuh uh");
     } else {
+      console.log(selected, column);
       changeColumn(selected, column);
     }
   };
@@ -104,9 +108,13 @@ export default function Dnd() {
     setTasks(updatedTasks);
   };
 
+  const deleteTask = (taskId) => {
+    setTasks(tasks.filter((task) => task.id !== taskId));
+  };
+
   return (
     <div className="container">
-      <div>
+      <div className="topBar">
         <button onClick={() => addTask()}>Add new Task</button>
         <button onClick={() => reset()}>Reset</button>
       </div>
@@ -127,30 +135,14 @@ export default function Dnd() {
               {tasks
                 .filter((task) => task.column === column)
                 .map((task) => (
-                  <div
+                  <Task
                     key={task.id}
-                    className={`${
-                      column === "noDrop" && noDrop === "noDrop"
-                        ? "notAllowed"
-                        : "task"
-                    }`}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, task.id, column)}
-                  >
-                    {task.isEditing ? (
-                      <input
-                        type="text"
-                        defaultValue={task.value}
-                        onBlur={(e) => saveTaskValue(task.id, e.target.value)}
-                        autoFocus
-                      />
-                    ) : (
-                      task.value
-                    )}
-                    <button className="editButton" onClick={() => toggleEdit(task.id)}>
-                      {task.isEditing ? "Save" : "Edit"}
-                    </button>
-                  </div>
+                    task={task}
+                    toggleEdit={toggleEdit}
+                    saveTaskValue={saveTaskValue}
+                    onDragStart={handleDragStart}
+                    deleteTask={() => deleteTask(task.id)}
+                  />
                 ))}
             </div>
           </div>
