@@ -2,8 +2,19 @@ import { useState, useEffect } from "react";
 import "./dnd.scss";
 import Task from "../components/task/Task";
 import useWebSocket from "../utilities/useWebSockets";
+import { getAllTasks } from "../utilities/getAllTasks";
 
 export default function Dnd() {
+	useEffect(() => {
+		// Define an async function inside the effect to call getAllTasks
+		const fetchTasks = async () => {
+			const fetchedTasks = await getAllTasks();
+			setTasks(fetchedTasks); // Update the state with the fetched tasks
+		};
+
+		fetchTasks(); // Call the async function
+	}, []); // Empty dependency array means this effect runs once on mount
+
 	const [messages, sendMessage, clearMessages] = useWebSocket(
 		"ws://localhost:8080"
 	);
@@ -71,7 +82,7 @@ export default function Dnd() {
 
 	//Sets the state of the tasks
 	//Can be used to add tasks
-	const [tasks, setTasks] = useState(initialTasks);
+	const [tasks, setTasks] = useState([]);
 	//Data about tasks id, origin, and destination
 	const [dragData, setDragData] = useState({});
 	// Are we hovering over the noDrop div?
@@ -80,7 +91,7 @@ export default function Dnd() {
 	//Add new task to tasks
 	const addTask = () => {
 		const newTask = {
-			id: tasks.length + 1,
+			id: (tasks.length + 1).toString,
 			column: "Backlog",
 			value: `New Task`,
 			isEditing: false,
@@ -126,9 +137,19 @@ export default function Dnd() {
 	//2. changes category of the task to its new column
 	//3. setTask to our NewTasks
 	const changeColumn = (id, column) => {
-		const newTasks = [...tasks];
-		newTasks[id - 1].column = column;
-		setTasks([...newTasks]);
+		// Map over the tasks to find the one to update
+		const updatedTasks = tasks.map((task) => {
+			// Check if this is the task we want to update
+			if (task.id === id) {
+				// If so, return a new object with the updated column
+				return { ...task, column: column };
+			}
+			// Otherwise, return the task unchanged
+			return task;
+		});
+
+		// Update the state with the modified tasks array
+		setTasks(updatedTasks);
 
 		// Prepare the task update message
 		const taskChangeColumn = { action: "changeColumn", id, column };
@@ -160,6 +181,7 @@ export default function Dnd() {
 	};
 
 	const saveTaskValue = (id, newValue) => {
+		console.log(newValue, id);
 		const updatedTasks = tasks.map((task) => {
 			if (task.id === id) {
 				return { ...task, value: newValue, isEditing: false };
