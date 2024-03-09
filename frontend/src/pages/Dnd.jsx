@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import "./dnd.scss";
 import Task from "../components/task/Task";
+import Navbar from "../components/navbar/Navbar";
 import useWebSocket from "../utilities/useWebSockets";
 import { getAllTasks } from "../utilities/getAllTasks";
 import app from "../utilities/app";
@@ -231,10 +232,12 @@ export default function Dnd() {
 	};
 
 	return (
-		<div className="container">
+		<div className="dndContainer">
+			<Navbar />
 			<div className="topBar">
-				<button onClick={() => addTask()}>Add new Task</button>
-				<button onClick={() => reset()}>Reset</button>
+				<button className="addButton" onClick={() => addTask()}>
+					Add new Task
+				</button>
 			</div>
 			<div className="columns">
 				{columns.map((column) => (

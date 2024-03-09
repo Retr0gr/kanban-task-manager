@@ -1,0 +1,93 @@
+@mixin tablet {
+	@media screen and (max-width: 768px) {
+		@content;
+	}
+}
+
+body {
+	margin: auto;
+}
+
+$darkColor: #1f2544;
+$midDarkColor: #474f7a;
+$midLightColor: #81689d;
+$lightColor: #ffd0ec;
+
+.registerContainer {
+	margin: auto;
+	background-color: $darkColor;
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	.formContainer {
+		background-color: $lightColor;
+		height: 75vh;
+		width: 50vh;
+		padding: 0px 60px;
+		border-radius: 10px;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
+		align-items: left;
+		overflow: auto;
+
+		.logo {
+			color: $midDarkColor;
+			font-weight: bold;
+			font-size: 65px;
+			cursor: default;
+			padding-top: 20px;
+		}
+
+		.description {
+			color: $darkColor;
+			margin: 0px;
+			padding: 0px 0px 40px 0px;
+			border-bottom: 1px solid $darkColor;
+		}
+
+		.title {
+			padding-top: 10px;
+			color: $darkColor;
+			font-size: 30px;
+			cursor: default;
+		}
+
+		form {
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+			padding-bottom: 40px;
+			border-bottom: 1px solid $darkColor;
+
+			input {
+				padding: 15px;
+				border: none;
+				border-bottom: 1px solid $midDarkColor;
+				border-radius: 10px;
+
+				&::placeholder {
+					color: $midDarkColor;
+					font-size: 15px;
+				}
+			}
+            
+			button {
+				background-color: $midLightColor;
+				color: $lightColor;
+				font-size: 15px;
+				padding: 15px;
+				font-weight: bold;
+				border: none;
+				border-radius: 10px;
+				cursor: pointer;
+			}
+		}
+		p {
+			color: $darkColor;
+			margin: 0px;
+		}
+	}
+}

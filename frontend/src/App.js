@@ -1,11 +1,11 @@
-import './App.css';
-import Dnd from './pages/Dnd';
+import AuthProvider from "./utilities/authProvider";
+import Routes from "./routes"
 
 function App() {
   return (
-    <div className="App">
-      <Dnd />
-    </div>
+    <AuthProvider>
+      <Routes />
+    </AuthProvider>
   );
 }
 

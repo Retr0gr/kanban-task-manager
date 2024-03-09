@@ -1,0 +1,25 @@
+.navbar {
+	display: flex;
+	justify-content: space-between;
+	.navTitle {
+		color: #ffd0ec;
+	}
+
+	.userName {
+		color: #ffd0ec;
+		text-align: center;
+		margin: auto;
+		font-size: 25px;
+	}
+
+	button {
+		background-color: #ffd0ec;
+		color: #1f2544;
+		font-size: 20px;
+		margin: 5px;
+		margin-left: 10px;
+		padding: 5px;
+		font-weight: bold;
+		border: none;
+	}
+}
