@@ -8,6 +8,7 @@ const TaskSchema = new mongoose.Schema({
     },
     value: {
         type: String,
+        default: "New Task"
     },
     isEditing: {
         type: Boolean,

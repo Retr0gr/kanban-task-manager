@@ -7,8 +7,8 @@ const getAllTasks = async (req, res) => {
 };
 
 const addTask = async (req, res) => {
-    const { value } = req.body;
-    const task = await Task.create({ value });
+    //const { value } = req.body;
+    const task = await Task.create({});
     res.status(StatusCodes.CREATED).json({ task: task })
 }
 
@@ -21,9 +21,9 @@ const deleteTask = async (req, res) => {
 }
 
 const updateTaskValue = async (req, res) => {
-    const { value } = req.body;
+    const { newValue } = req.body;
     const task = await Task.findOne({ _id: req.params.id });
-    task.value = value;
+    task.value = newValue;
     await task.save();
     res.status(StatusCodes.OK).json({ task })
 }

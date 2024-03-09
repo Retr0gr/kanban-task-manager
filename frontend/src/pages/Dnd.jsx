@@ -3,6 +3,7 @@ import "./dnd.scss";
 import Task from "../components/task/Task";
 import useWebSocket from "../utilities/useWebSockets";
 import { getAllTasks } from "../utilities/getAllTasks";
+import app from "../utilities/app";
 
 export default function Dnd() {
 	useEffect(() => {
@@ -48,6 +49,7 @@ export default function Dnd() {
 						);
 						break;
 					case "delete":
+						console.log("deleted");
 						setTasks((prevTasks) =>
 							prevTasks.filter((task) => task.id !== id)
 						);
@@ -89,20 +91,26 @@ export default function Dnd() {
 	const [noDrop, setNoDrop] = useState("");
 
 	//Add new task to tasks
-	const addTask = () => {
-		const newTask = {
-			id: (tasks.length + 1).toString,
-			column: "Backlog",
-			value: `New Task`,
-			isEditing: false,
-		};
+	const addTask = async (e) => {
+		//e.preventDefault();
 
-		const newTasks = [...tasks, newTask];
-		setTasks(newTasks);
-		// Prepare the task add message
-		const taskAdd = { action: "add", newTask };
-		// Send add message to WebSocket server
-		sendMessage(taskAdd);
+		await app
+			.post("//localhost:5001/api/v1/tasks/addTask", {})
+			.then((res) => {
+				const newTask = {
+					id: res.data.task._id,
+					column: "Backlog",
+					value: `New Task`,
+					isEditing: false,
+				};
+
+				const newTasks = [...tasks, newTask];
+				setTasks(newTasks);
+				// Prepare the task add message
+				const taskAdd = { action: "add", newTask };
+				// Send add message to WebSocket server
+				sendMessage(taskAdd);
+			});
 	};
 
 	const reset = () => {
@@ -136,25 +144,31 @@ export default function Dnd() {
 	//1. makes copy of taks (newTasks)
 	//2. changes category of the task to its new column
 	//3. setTask to our NewTasks
-	const changeColumn = (id, column) => {
-		// Map over the tasks to find the one to update
-		const updatedTasks = tasks.map((task) => {
-			// Check if this is the task we want to update
-			if (task.id === id) {
-				// If so, return a new object with the updated column
-				return { ...task, column: column };
-			}
-			// Otherwise, return the task unchanged
-			return task;
-		});
+	const changeColumn = async (id, column) => {
+		await app
+			.patch(`//localhost:5001/api/v1/tasks/updateColumn/${id}`, {
+				column,
+			})
+			.then((res) => {
+				// Map over the tasks to find the one to update
+				const updatedTasks = tasks.map((task) => {
+					// Check if this is the task we want to update
+					if (task.id === id) {
+						// If so, return a new object with the updated column
+						return { ...task, column: column };
+					}
+					// Otherwise, return the task unchanged
+					return task;
+				});
 
-		// Update the state with the modified tasks array
-		setTasks(updatedTasks);
+				// Update the state with the modified tasks array
+				setTasks(updatedTasks);
 
-		// Prepare the task update message
-		const taskChangeColumn = { action: "changeColumn", id, column };
-		// Send update to WebSocket server
-		sendMessage(taskChangeColumn);
+				// Prepare the task update message
+				const taskChangeColumn = { action: "changeColumn", id, column };
+				// Send update to WebSocket server
+				sendMessage(taskChangeColumn);
+			});
 	};
 
 	// 1. setNoDrop in case item was dropped in noDrop
@@ -180,27 +194,40 @@ export default function Dnd() {
 		setTasks(updatedTasks);
 	};
 
-	const saveTaskValue = (id, newValue) => {
-		console.log(newValue, id);
-		const updatedTasks = tasks.map((task) => {
-			if (task.id === id) {
-				return { ...task, value: newValue, isEditing: false };
-			}
-			return task;
-		});
-		setTasks(updatedTasks);
-		// Prepare the task update message
-		const taskUpdate = { action: "edit", id, newValue };
-		// Send update to WebSocket server
-		sendMessage(taskUpdate);
+	const saveTaskValue = async (id, newValue) => {
+		await app
+			.patch(`//localhost:5001/api/v1/tasks/updateValue/${id}`, {
+				newValue,
+			})
+			.then((res) => {
+				const updatedTasks = tasks.map((task) => {
+					if (task.id === res.data.task._id) {
+						return { ...task, value: newValue, isEditing: false };
+					}
+					return task;
+				});
+				setTasks(updatedTasks);
+				// Prepare the task update message
+				const taskUpdate = { action: "edit", id, newValue };
+				// Send update to WebSocket server
+				sendMessage(taskUpdate);
+			});
 	};
 
-	const deleteTask = (id) => {
-		setTasks(tasks.filter((task) => task.id !== id));
-		// Prepare the task delete message
-		const taskDelete = { action: "delete", id };
-		// Send delete message to WebSocket server
-		sendMessage(taskDelete);
+	const deleteTask = async (id) => {
+		await app
+			.delete(`//localhost:5001/api/v1/tasks/deleteTask/${id}`)
+			.then((res) => {
+				console.log(res.data);
+				setTasks(tasks.filter((task) => task.id !== id));
+				// Prepare the task delete message
+				const taskDelete = { action: "delete", id };
+				// Send delete message to WebSocket server
+				sendMessage(taskDelete);
+			})
+			.catch((err) => {
+				console.log(err);
+			});
 	};
 
 	return (
