@@ -34,6 +34,18 @@ Install dependencies for the client:
 cd ./frontend
 npm install
 ```
+Install dependencies for the server:
+
+```
+cd ./backend
+npm install
+```
+Install dependencies for the websocket server:
+
+```
+cd ./websocket-server
+npm install
+```
 
 ### Running the Application
 
@@ -41,6 +53,20 @@ Start the client:
 
 ```
 cd frontend
+npm start
+```
+
+Start the server:
+
+```
+cd backend
+npm start
+```
+
+Start the websocket server:
+
+```
+cd websocket-server
 npm start
 ```
 
